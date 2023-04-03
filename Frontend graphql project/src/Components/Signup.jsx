@@ -2,7 +2,12 @@ import React, { useRef, useState } from 'react'
 import Header from './Header'
 
 function Signup() {
-    const [formData, setFormData] = useState({"email":"", "password":"", "confirmPassword":""})
+    const fields = {
+        "email":"", 
+        "password":"", 
+        "confirmPassword":""
+    }
+    const [formData, setFormData] = useState(fields)
 
     const errorMessageRef= useRef(null)
 

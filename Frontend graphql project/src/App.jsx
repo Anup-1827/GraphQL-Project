@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
+import { ApolloClient, ApolloProvider, InMemoryCache, createHttpLink } from "@apollo/client";
+import {setContext} from "@apollo/client/link/context"
 import {BrowserRouter, Route, Routes} from "react-router-dom"
 
 
@@ -7,11 +8,27 @@ import Header from "./Components/Header";
 import Clients from "./Components/Clients";
 import Login from "./Components/Login";
 import Signup from "./Components/Signup";
+import { DUMMY_TOKEN } from "./config";
+
+const authLink = setContext((_, {headers})=>{
+  const token = DUMMY_TOKEN
+  return{
+    headers:{
+      authorization: token
+    }
+  }
+})
+
+const httpLink = createHttpLink({
+  uri: "http://localhost:1111/graphql"
+})
 
 const client = new ApolloClient({
-  uri: "http://localhost:1111/graphql",
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
+
+
 
 function App() {
   return (

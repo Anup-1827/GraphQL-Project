@@ -73,7 +73,7 @@ const Mutation = new GraphQLObjectType({
         email: { type: new GraphQLNonNull(GraphQLString) },
         phone: { type: new GraphQLNonNull(GraphQLString) },
       },
-      resolve(parent, args) {
+      resolve(parent, args, {secretValue}) {
         const userId = VerifyToken(secretValue);
         if (userId !== "Invalid Token") {
           const newClinet = new Client({
@@ -93,7 +93,7 @@ const Mutation = new GraphQLObjectType({
       args: {
         id: { type: new GraphQLNonNull(GraphQLString) },
       },
-      resolve(parent, args) {
+      resolve(parent, args, {secretValue}) {
         const userId = VerifyToken(secretValue);
         if (userId !== "Invalid Token") {
           return Client.findByIdAndRemove(args.id);
@@ -120,7 +120,7 @@ const Mutation = new GraphQLObjectType({
           }),
         },
       },
-      resolve(parent, args) {
+      resolve(parent, args, {secretValue}) {
         const userId = VerifyToken(secretValue);
         if (userId !== "Invalid Token") {
           const ProjectInfo = new Project({
@@ -141,7 +141,7 @@ const Mutation = new GraphQLObjectType({
       args: {
         id: { type: new GraphQLNonNull(GraphQLString) },
       },
-      resolve(parent, args) {
+      resolve(parent, args, {secretValue}) {
         const userId = VerifyToken(secretValue);
         if (userId !== "Invalid Token") {
           return Project.findByIdAndDelete(args.id);
@@ -168,7 +168,7 @@ const Mutation = new GraphQLObjectType({
           }),
         },
       },
-      resolve(parent, args) {
+      resolve(parent, args, {secretValue}) {
         const userId = VerifyToken(secretValue);
         if (userId !== "Invalid Token") {
           return Project.findByIdAndUpdate(

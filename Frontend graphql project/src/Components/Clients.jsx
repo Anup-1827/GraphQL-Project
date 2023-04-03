@@ -1,21 +1,22 @@
 import { useQuery, gql } from "@apollo/client";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrash } from '@fortawesome/free-solid-svg-icons'
-import { GET_CLIENTS } from "../queries/ClientQueries";
+import { GET_CLIENTS } from "../graphql/queries/ClientQueries";
 import Spinner from "./Common/Spinner";
+import ClientRow from "./ClientRow";
+import Header from "./Header";
 
 
 export default function Clients() {
   const { loading, error, data } = useQuery(GET_CLIENTS);
 
-  console.log(data);
+  console.log(error);
 
   if (loading) return <div><Spinner/></div>;
-  if (error) return <div>Something Went Wrong</div>;
+  if (error) return <div> <Header/>  Something Went Wrong</div>;
 
   return (
     <div className="mt-5">
       <table className=" w-full sm:w-4/5 m-auto table-auto overflow-x-auto">
+        <tbody>
         <tr>
           <th className="border-2 border-black">Name</th>
           <th className="border-2 border-black">Email</th>
@@ -25,14 +26,10 @@ export default function Clients() {
         {data.clients &&
           data.clients.map((client) => {
             return (
-              <tr key={client.id}>
-                <td className="border-2 border-black pl-4">{client.name}</td>
-                <td className="border-2 border-black pl-4">{client.email}</td>
-                <td className="border-2 border-black pl-4">{client.phone}</td>
-                <td className="border-2 border-black pl-4 text-center cursor-pointer text-red-500">{<FontAwesomeIcon icon={faTrash}/>}</td>
-              </tr>
+              <ClientRow key={client.id} client={client}/>
             );
           })}
+        </tbody>
       </table>
     </div>
   );
