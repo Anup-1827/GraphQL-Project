@@ -1,5 +1,5 @@
-import { useQuery, gql } from "@apollo/client";
-import { useState } from "react";
+import { useQuery, gql, useMutation } from "@apollo/client";
+import { useRef, useState } from "react";
 import Modal from 'react-modal';
 
 import { GET_CLIENTS } from "../graphql/queries/ClientQueries";
@@ -8,6 +8,7 @@ import ClientRow from "./ClientRow";
 import Header from "./Header";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { ADD_CLIENT } from "../graphql/mutations/ClientMutation";
 
 const customStyles = {
   content: {
@@ -23,10 +24,62 @@ const customStyles = {
 
 Modal.setAppElement('#root');
 
-export default function Clients() {
-  const { loading, error, data } = useQuery(GET_CLIENTS);
+const initalFieldValuesOfAddClient = {
+  name:"",
+  email:"",
+  phone:"",
+}
 
+export default function Clients() {
   const [addClientModalOpen, setAddClientModalOpen] = useState(false);
+  const [addClientFormData, setAddClientFormData] = useState(initalFieldValuesOfAddClient);
+  const errorRef = useRef(null)
+  const { loading, error, data } = useQuery(GET_CLIENTS);
+  const [addClient] = useMutation(ADD_CLIENT,{
+    variables:{
+      name: addClientFormData.name,
+      email: addClientFormData.email,
+      phone: addClientFormData.phone
+    },
+    update(cache,{data: {addClient} }){
+      const {clients} = cache.readQuery({query: GET_CLIENTS})
+
+      console.log(addClient.addClient);
+
+      cache.writeQuery({
+        query:GET_CLIENTS,
+        data: {clients: [...clients, addClient]}
+      })
+    }
+  })
+
+
+  const handleAddClient = (event)=>{
+      event.preventDefault();
+        addClient()
+        .then(()=>{
+          setAddClientFormData({})
+          setAddClientModalOpen(false)
+        })
+        .catch(err=>{
+          errorRef.current.classList.remove('hidden');
+          errorRef.current.innerText  = err.message
+        })
+  }
+
+  const handleChangeInputInAddClient = (event)=>{
+      const name = event.target.name;
+      const value = event.target.value;
+
+      errorRef.current.classList.add('hidden');
+      errorRef.current.innerText = ""
+
+      setAddClientFormData({
+        ...addClientFormData,
+        [name]: value
+      })
+  }
+
 
 
   if (loading)
@@ -79,31 +132,31 @@ export default function Clients() {
         style={customStyles}
         contentLabel="Example Modal"
       >
-        <form className='h-[93%] flex flex-col gap-4 justify-center items-center bg-main-color p-5'>
+        <form onSubmit={handleAddClient} className='h-[93%] flex flex-col gap-4 justify-center items-center bg-main-color p-5'>
             <h1 className='text-main-heading font-bold text-center text-3xl mb-6'>Add New Client</h1>
             <div className='px-5 w-full'>
                 <label htmlFor="newClientName" className='w-full text-center text-main-heading font-bold text-xl cursor-pointer'>Client Name
                 <br/>
-                <input id="newClientName" type='text' name="name" placeholder='Client Name' className='bg-transparent w-full sm:w-[540px]' required/>
+                <input id="newClientName" type='text' name="name" onChange={handleChangeInputInAddClient} placeholder='Client Name' className='bg-transparent w-full sm:w-[540px]' required/>
                 </label>
             </div>
 
             <div className='px-5 w-full'>
                 <label htmlFor="newClientEmail" className='w-full text-center text-main-heading font-bold text-xl cursor-pointer'>Client Email
                 <br/>
-                <input id="newClientEmail" type='email' name="email" placeholder='Client Email' className='bg-transparent w-full sm:w-[540px]' required/>
+                <input id="newClientEmail" type='email' name="email" onChange={handleChangeInputInAddClient} placeholder='Client Email' className='bg-transparent w-full sm:w-[540px]' required/>
                 </label>
             </div>
 
             <div className='px-5 w-full'>
                 <label htmlFor="newClientPhone" className='w-full text-center text-main-heading font-bold text-xl cursor-pointer'>Client Phone Number
                 <br/>
-                <input id="newClientPhone" type='number' name="phone"  maxLength={10} placeholder='Client Phone Number' className='bg-transparent w-full sm:w-[540px]' required/>
+                <input id="newClientPhone" type='number' name="phone" onChange={handleChangeInputInAddClient} maxLength={10} placeholder='Client Phone Number' className='bg-transparent w-full sm:w-[540px]' required/>
                 </label>
             </div>
 
 
-            <div className='text-red-600 font-bold'>
+            <div ref={errorRef} className='text-red-600 font-bold break-words'>
 
             </div>
 
