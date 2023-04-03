@@ -6,6 +6,8 @@ import { GET_CLIENTS } from "../graphql/queries/ClientQueries";
 import Spinner from "./Common/Spinner";
 import ClientRow from "./ClientRow";
 import Header from "./Header";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 
 const customStyles = {
   content: {
@@ -47,10 +49,10 @@ export default function Clients() {
       <div className="mt-2 px-2 text-right">
         <button
           type="submit"
-          className="text-main-heading mt-2 font-bold text-base border border-main-heading rounded px-2 py-1 hover:bg-main-heading hover:text-main-color transition ease-linear duration-500"
+          className="text-main-heading mt-2 font-bold text-base border border-main-heading rounded px-2 py-1 hover:bg-main-heading hover:text-main-color transition ease-linear duration-300"
           onClick={()=> setAddClientModalOpen(true)}
         >
-          Add Client
+         <FontAwesomeIcon icon={faUser}/> Add Client
         </button>
       </div>
 
@@ -105,8 +107,8 @@ export default function Clients() {
 
             </div>
 
-            <button type='submit' className='text-main-heading mt-2 font-bold text-xl border border-main-heading rounded p-2 hover:bg-main-heading hover:text-main-color transition ease-linear duration-500'>
-               Add Client
+            <button type='submit' className='text-main-heading mt-2 font-bold text-xl border border-main-heading rounded p-2 hover:bg-main-heading hover:text-main-color transition ease-linear duration-300'>
+              <FontAwesomeIcon icon={faUser}/> Add Client
             </button>
         </form>
       </Modal>
