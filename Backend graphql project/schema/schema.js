@@ -1,14 +1,14 @@
 // Packages
 const bcrypt = require("bcrypt");
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 // Mongoose Models
 const Client = require("../models/Client");
 const Project = require("../models/Project");
 const UserLogin = require("../models/UserLogin");
+const VerifyToken = require("../common/VerifyToken");
 
-
-const TOKEN= process.env.TOKEN;
+const TOKEN = process.env.TOKEN;
 
 const {
   GraphQLObjectType,
@@ -58,10 +58,10 @@ const UserLoginType = new GraphQLObjectType({
 
 const TokenType = new GraphQLObjectType({
   name: "Token",
-  fields:()=>({
-    token: { type:new GraphQLNonNull(GraphQLString)}
-  })
-})
+  fields: () => ({
+    token: { type: new GraphQLNonNull(GraphQLString) },
+  }),
+});
 
 const Mutation = new GraphQLObjectType({
   name: "Mutation",
@@ -74,13 +74,18 @@ const Mutation = new GraphQLObjectType({
         phone: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve(parent, args) {
-        const newClinet = new Client({
-          name: args.name,
-          email: args.email,
-          phone: args.phone,
-        });
+        const userId = VerifyToken(secretValue);
+        if (userId !== "Invalid Token") {
+          const newClinet = new Client({
+            name: args.name,
+            email: args.email,
+            phone: args.phone,
+          });
 
-        return newClinet.save();
+          return newClinet.save();
+        } else {
+          throw new Error("Invalid Token");
+        }
       },
     },
     deleteClient: {
@@ -89,7 +94,12 @@ const Mutation = new GraphQLObjectType({
         id: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve(parent, args) {
-        return Client.findByIdAndRemove(args.id);
+        const userId = VerifyToken(secretValue);
+        if (userId !== "Invalid Token") {
+          return Client.findByIdAndRemove(args.id);
+        } else {
+          throw new Error("Invalid Token");
+        }
       },
     },
     addProject: {
@@ -111,14 +121,19 @@ const Mutation = new GraphQLObjectType({
         },
       },
       resolve(parent, args) {
-        const ProjectInfo = new Project({
-          name: args.name,
-          description: args.description,
-          clientId: args.clientId,
-          status: args.status,
-        });
+        const userId = VerifyToken(secretValue);
+        if (userId !== "Invalid Token") {
+          const ProjectInfo = new Project({
+            name: args.name,
+            description: args.description,
+            clientId: args.clientId,
+            status: args.status,
+          });
 
-        return ProjectInfo.save();
+          return ProjectInfo.save();
+        } else {
+          throw new Error("Invalid Token");
+        }
       },
     },
     deleteProject: {
@@ -127,7 +142,12 @@ const Mutation = new GraphQLObjectType({
         id: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve(parent, args) {
-        return Project.findByIdAndDelete(args.id);
+        const userId = VerifyToken(secretValue);
+        if (userId !== "Invalid Token") {
+          return Project.findByIdAndDelete(args.id);
+        } else {
+          throw new Error("Invalid Token");
+        }
       },
     },
     updateProject: {
@@ -149,22 +169,27 @@ const Mutation = new GraphQLObjectType({
         },
       },
       resolve(parent, args) {
-        return Project.findByIdAndUpdate(
-          args.id,
-          {
-            $set: {
-              name: args.name,
-              description: args.description,
-              status: args.status,
-              clientId: args.clientId,
+        const userId = VerifyToken(secretValue);
+        if (userId !== "Invalid Token") {
+          return Project.findByIdAndUpdate(
+            args.id,
+            {
+              $set: {
+                name: args.name,
+                description: args.description,
+                status: args.status,
+                clientId: args.clientId,
+              },
             },
-          },
-          { new: true }
-        );
+            { new: true }
+          );
+        } else {
+          throw new Error("Invalid Token");
+        }
       },
     },
     signUpUser: {
-      type: UserLoginType,
+      type: TokenType,
       args: {
         email: { type: new GraphQLNonNull(GraphQLString) },
         password: { type: new GraphQLNonNull(GraphQLString) },
@@ -200,7 +225,7 @@ const Mutation = new GraphQLObjectType({
       type: TokenType,
       args: {
         email: { type: new GraphQLNonNull(GraphQLString) },
-        password: { type: new GraphQLNonNull(GraphQLString)},
+        password: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve: async (parent, args) => {
         try {
@@ -214,25 +239,24 @@ const Mutation = new GraphQLObjectType({
             );
           }
 
-          const isPassword = await bcrypt.compare(args.password , user.password);
-          if(isPassword){
-            const jwtToken = jwt.sign({userId:user._id}, TOKEN)
+          const isPassword = await bcrypt.compare(args.password, user.password);
+          if (isPassword) {
+            const jwtToken = jwt.sign({ userId: user._id }, TOKEN);
 
-            return {token: jwtToken}
-          }
-          else{
-              throw new Error(
-                  JSON.stringify({
-                    status: 404,
-                    errors: [{ 0: "Password is Incorrect" }],
-                  })
-                ); 
+            return { token: jwtToken };
+          } else {
+            throw new Error(
+              JSON.stringify({
+                status: 404,
+                errors: [{ 0: "Password is Incorrect" }],
+              })
+            );
           }
         } catch (error) {
           return error;
         }
-      },
-  },
+      }, 
+    },
   }),
 });
 
@@ -241,31 +265,58 @@ const RootQueryType = new GraphQLObjectType({
   fields: () => ({
     clients: {
       type: new GraphQLList(ClientsType),
-      resolve(parent, args) {
-        return Client.find();
+      resolve(parent, args, { secretValue }) {
+        if (!secretValue) throw new Error("Unauthorized");
+
+        const userId = VerifyToken(secretValue);
+        if (userId !== "Invalid Token") {
+          return Client.find();
+        } else {
+          throw new Error("Invalid Token");
+        }
       },
     },
     client: {
       type: ClientsType,
       args: { id: { type: GraphQLID } },
-      resolve(parent, args) {
-        return Client.findById(args.id);
+      resolve(parent, args, { secretValue }) {
+        if (!secretValue) throw new Error("Unauthorized");
+
+        const userId = VerifyToken(secretValue);
+        if (userId !== "Invalid Token") {
+          return Client.findById(args.id);
+        } else {
+          throw new Error("Invalid Token");
+        }
       },
     },
     projects: {
       type: new GraphQLList(ProjectType),
-      resolve(parent, args) {
-        return Project.find();
+      resolve(parent, args, { secretValue }) {
+        if (!secretValue) throw new Error("Unauthorized");
+
+        const userId = VerifyToken(secretValue);
+        if (userId !== "Invalid Token") {
+          return Project.find();
+        } else {
+          throw new Error("Invalid Token");
+        }
       },
     },
     project: {
       type: ProjectType,
       args: { id: { type: GraphQLID } },
-      resolve(parent, args) {
-        return Project.findById(args.id);
+      resolve(parent, args, { secretValue }) {
+        if (!secretValue) throw new Error("Unauthorized");
+
+        const userId = VerifyToken(secretValue);
+        if (userId !== "Invalid Token") {
+          return Project.findById(args.id);
+        } else {
+          throw new Error("Invalid Token");
+        }
       },
     },
-    
   }),
 });
 
