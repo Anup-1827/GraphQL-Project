@@ -23,9 +23,23 @@ const httpLink = createHttpLink({
   uri: "http://localhost:1111/graphql"
 })
 
+const cache = new InMemoryCache({
+  typePolicies:{
+    Query:{
+      fields:{
+        clients:{
+          merge(existing, incoming){
+            return incoming
+          }
+        }
+      }
+    }
+  }
+})
+
 const client = new ApolloClient({
   link: authLink.concat(httpLink),
-  cache: new InMemoryCache(),
+  cache,
 });
 
 

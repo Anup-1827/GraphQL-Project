@@ -14,6 +14,8 @@ export default function Clients() {
   if (error) return <div> <Header/>  Something Went Wrong</div>;
 
   return (
+    <>
+      <Header/>
     <div className="mt-5">
       <table className=" w-full sm:w-4/5 m-auto table-auto overflow-x-auto">
         <tbody>
@@ -32,5 +34,6 @@ export default function Clients() {
         </tbody>
       </table>
     </div>
+    </>
   );
 }

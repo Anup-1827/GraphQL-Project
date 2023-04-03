@@ -91,7 +91,7 @@ const Mutation = new GraphQLObjectType({
     deleteClient: {
       type: ClientsType,
       args: {
-        id: { type: new GraphQLNonNull(GraphQLString) },
+        id: { type: new GraphQLNonNull(GraphQLID) },
       },
       resolve(parent, args, {secretValue}) {
         const userId = VerifyToken(secretValue);
@@ -139,7 +139,7 @@ const Mutation = new GraphQLObjectType({
     deleteProject: {
       type: ProjectType,
       args: {
-        id: { type: new GraphQLNonNull(GraphQLString) },
+        id: { type: new GraphQLNonNull(GraphQLID) },
       },
       resolve(parent, args, {secretValue}) {
         const userId = VerifyToken(secretValue);
