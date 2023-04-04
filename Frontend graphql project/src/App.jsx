@@ -3,12 +3,12 @@ import { ApolloClient, ApolloProvider, InMemoryCache, createHttpLink } from "@ap
 import {setContext} from "@apollo/client/link/context"
 import {BrowserRouter, Route, Routes} from "react-router-dom"
 
-
-import Header from "./Components/Header";
 import Clients from "./Components/Clients";
 import Login from "./Components/Login";
 import Signup from "./Components/Signup";
+import Project from "./pages/Project";
 import { DUMMY_TOKEN } from "./config";
+import NotFound from "./pages/NotFound";
 
 const authLink = setContext((_, {headers})=>{
   const token = DUMMY_TOKEN
@@ -52,7 +52,9 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login/>}/>
             <Route path="/signup" element={<Signup/>}/>
-            <Route path="/clients" element={<Clients/>}/>
+            <Route path="/" element={<Clients/>}/>
+            <Route path="/project/:id" element={<Project/>}/>
+            <Route path="*" element={<NotFound/>}/>
           </Routes>
         </BrowserRouter>
       </div>
