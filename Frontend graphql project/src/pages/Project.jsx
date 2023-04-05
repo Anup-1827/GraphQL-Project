@@ -111,7 +111,7 @@ export default function Project() {
   const token = localStorage.getItem("token")
   return (
     token?
-    <div>
+    <div className="h-full">
       <div className="w-full h-full bg-main-color">
         <Header />
         <div>

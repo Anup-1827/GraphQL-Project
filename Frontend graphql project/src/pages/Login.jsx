@@ -3,6 +3,8 @@ import Header from '../Components/Header'
 import { useMutation } from '@apollo/client';
 import { LOGIN_USER } from '../graphql/mutations/UserMutation';
 import { useNavigate } from 'react-router';
+import { Link } from 'react-router-dom'
+
 
 function Login() {
     const fields = {
@@ -70,6 +72,13 @@ function Login() {
             <button type='submit' className='text-main-heading mt-2 font-bold text-xl border border-main-heading rounded p-2 hover:bg-main-heading hover:text-main-color transition ease-linear duration-500'>
                 Login
             </button>
+
+            <p>
+              Don't have an account? 
+              <Link to="/signup">
+                        <span className='text-blue-900 font-bold cursor-pointer'>Sign up</span>
+              </Link>
+            </p>
         </form>
         </main>
   )

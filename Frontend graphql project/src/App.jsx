@@ -48,7 +48,7 @@ const client = new ApolloClient({
 function App() {
   return (
     <ApolloProvider client={client}>
-      <div className="App w-[100vw] h-[100vh] ">
+      <div className="App h-full">
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login/>}/>

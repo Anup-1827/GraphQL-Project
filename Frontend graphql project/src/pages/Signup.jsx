@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react'
 import Header from '../Components/Header'
+import { Link } from 'react-router-dom'
 
 function Signup() {
     const fields = {
@@ -64,7 +65,11 @@ function Signup() {
             </button>
 
             <div >
-                <h1>Already have an account? <span className='text-blue-900 font-bold cursor-pointer'>Login</span></h1>
+                <h1>Already have an account? 
+                    <Link to="/login">
+                        <span className='text-blue-900 font-bold cursor-pointer'>Login</span>
+                    </Link>
+                </h1>
             </div>
         </form>
         </main>
