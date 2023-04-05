@@ -6,6 +6,9 @@ import { GET_CLIENTS } from "../graphql/queries/ClientQueries";
 import Header from "../Components/Header";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faCircleCheck,
+  faClock,
+  faEllipsisH,
   faEnvelope,
   faList,
   faPen,
@@ -88,6 +91,18 @@ export default function Project() {
             <h1 className="text-3xl text-main-heading font-bold">
               <FontAwesomeIcon icon={faProjectDiagram} /> {project.name}
             </h1>
+            <div className="mt-6 border rounded-lg p-2 w-full sm:w-3/4 sm:mx-auto border-black">
+              <h1 className="font-bold text-green-500">
+                 Status :-
+                 <p className={`mx-2 ${project.status === "New"?"text-blue-500": project.status === "Progress"?"text-yellow-300":"text-green-500"  }`} >
+
+                <FontAwesomeIcon className="mr-2" icon={project.status === "New"? faEllipsisH : project.status === "Progress"? faClock : faCircleCheck} />
+                    
+                          {project.status}
+                 </p>
+                    
+              </h1>
+            </div>
             <div className="mt-6 border rounded-lg p-2 w-full sm:w-3/4 sm:mx-auto border-black">
               <h1 className="font-bold text-green-500">
                 <FontAwesomeIcon icon={faList} /> Description
@@ -190,7 +205,7 @@ export default function Project() {
                 required
               >
                 <option value="">Select</option>
-                <option value="New">Not Started</option>
+                <option value="New">New</option>
                 <option value="Progress">Progress</option>
                 <option value="Completed">Done</option>
               </select>

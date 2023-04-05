@@ -2,7 +2,14 @@ import React, { useRef, useState } from "react";
 import { GET_PROJECTS } from "../graphql/queries/ProjectQueries";
 import { useMutation, useQuery } from "@apollo/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faList, faTrash, faUser } from "@fortawesome/free-solid-svg-icons";
+import {
+  faList,
+  faTrash,
+  faUser,
+  faCircleCheck,
+  faEllipsisH,
+  faClock,
+} from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import Modal from "react-modal";
 import {
@@ -43,15 +50,19 @@ function ProjectList({ clientData }) {
     refetchQueries: [{ query: GET_PROJECTS }],
   });
 
-  const [deleteProject] = useMutation(DELETE_PROJECT,{
-    update(cache, {data:{deleteProject}}){
-        const {projects} = cache.readQuery({query: GET_PROJECTS})
+  const [deleteProject] = useMutation(DELETE_PROJECT, {
+    update(cache, { data: { deleteProject } }) {
+      const { projects } = cache.readQuery({ query: GET_PROJECTS });
 
-        cache.writeQuery({
-        query : GET_PROJECTS,
-        data: {projects: projects.filter(project=> project.id !== deleteProject.id)}
-        })
-    }
+      cache.writeQuery({
+        query: GET_PROJECTS,
+        data: {
+          projects: projects.filter(
+            (project) => project.id !== deleteProject.id
+          ),
+        },
+      });
+    },
   });
 
   const errorRef = useRef();
@@ -73,8 +84,8 @@ function ProjectList({ clientData }) {
   const handleAddProject = (event) => {
     event.preventDefault();
     addProject()
-      .then(()=>{
-        setAddProjectModalOpen(false)
+      .then(() => {
+        setAddProjectModalOpen(false);
       })
       .catch((err) => {
         errorRef.current.innerText = err.message;
@@ -97,7 +108,10 @@ function ProjectList({ clientData }) {
         <div className="sm:w-3/4 m-2 sm:mx-auto flex justify-center items-center flex-wrap gap-4 mt-4">
           {data.projects.map((project) => {
             return (
-              <div key={project.id} className="flex-grow flex-shrink basis-80 border border-main-heading rounded-md p-3">
+              <div
+                key={project.id}
+                className="flex-grow flex-shrink basis-80 border border-main-heading rounded-md p-3"
+              >
                 <div className="flex items-center justify-between">
                   <h1 className="font-bold text-xl text-main-heading">
                     {project.name}
@@ -105,12 +119,12 @@ function ProjectList({ clientData }) {
                   <FontAwesomeIcon
                     className="cursor-pointer text-red-700"
                     icon={faTrash}
-                    onClick={()=>{
-                        deleteProject({
-                            variables:{
-                                id: project.id
-                            }
-                        })
+                    onClick={() => {
+                      deleteProject({
+                        variables: {
+                          id: project.id,
+                        },
+                      });
                     }}
                   />
                 </div>
@@ -121,9 +135,30 @@ function ProjectList({ clientData }) {
                   <div>
                     <div className="pl-3">
                       <p className="mt-3">{project.description}</p>
-                      <p className="border border-green-500 rounded p-2 mt-2 text-green-500">
+                      <p className="border w-fit border-green-500 rounded p-2 mt-2 text-green-500">
                         Status:-{" "}
-                        <span className="font-bold">{project.status}</span>
+                        <span
+                          className={`mx-2 ${
+                            project.status === "New"
+                              ? "text-blue-500"
+                              : project.status === "Progress"
+                              ? "text-yellow-300"
+                              : "text-green-500"
+                          }`}
+                        >
+                          <FontAwesomeIcon
+                            className="mr-2"
+                            icon={
+                              project.status === "New"
+                                ? faEllipsisH
+                                : project.status === "Progress"
+                                ? faClock
+                                : faCircleCheck
+                            }
+                          />
+
+                          {project.status}
+                        </span>
                       </p>
                     </div>
                   </div>
@@ -140,7 +175,9 @@ function ProjectList({ clientData }) {
           })}
         </div>
       ) : (
-        <div className="flex justify-center text-xl font-bold">No Projects Added Yet!!!!</div>
+        <div className="flex justify-center text-xl font-bold">
+          No Projects Added Yet!!!!
+        </div>
       )}
 
       <Modal
@@ -207,7 +244,7 @@ function ProjectList({ clientData }) {
                 required
               >
                 <option value="">Select</option>
-                <option value="New">Not Started</option>
+                <option value="New">New</option>
                 <option value="Progress">Progress</option>
                 <option value="Done">Done</option>
               </select>
