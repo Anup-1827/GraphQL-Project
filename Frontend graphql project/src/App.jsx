@@ -4,8 +4,8 @@ import {setContext} from "@apollo/client/link/context"
 import {BrowserRouter, Route, Routes} from "react-router-dom"
 
 import Clients from "./Components/Clients";
-import Login from "./Components/Login";
-import Signup from "./Components/Signup";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import Project from "./pages/Project";
 import { DUMMY_TOKEN } from "./config";
 import NotFound from "./pages/NotFound";
