@@ -47,14 +47,6 @@ const ProjectType = new GraphQLObjectType({
   }),
 });
 
-const UserLoginType = new GraphQLObjectType({
-  name: "UserLogin",
-  fields: () => ({
-    id: { type: GraphQLID },
-    email: { type: GraphQLString },
-    password: { type: GraphQLString },
-  }),
-});
 
 const TokenType = new GraphQLObjectType({
   name: "Token",
@@ -161,9 +153,9 @@ const Mutation = new GraphQLObjectType({
           type: new GraphQLEnumType({
             name: "ProjectStatusUpdate",
             values: {
-              new: { value: "Not Started" },
-              progess: { value: "Progess" },
-              done: { value: "Done" },
+              New: { value: "New" },
+              Progress: { value: "Progress" },
+              Done: { value: "Done" },
             },
           }),
         },

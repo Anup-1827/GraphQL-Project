@@ -8,6 +8,7 @@ const ADD_PROJECT = gql`
             description
             status
             client{
+                id
                 name
                 email 
                 phone
@@ -24,4 +25,21 @@ const DELETE_PROJECT = gql`
     }
 `
 
-export {ADD_PROJECT, DELETE_PROJECT}
+const UPDATE_PROJECT = gql`
+    mutation updateProject($id: ID!, $name: String!, $description: String!,  $status: ProjectStatusUpdate!, $clientId: String!){
+        updateProject(id: $id, name: $name, description: $description, clientId: $clientId, status: $status){
+            id
+            name
+            description
+            client{
+                id
+                name
+                email 
+                phone
+            }
+            status
+        }
+    }
+`
+
+export {ADD_PROJECT, DELETE_PROJECT, UPDATE_PROJECT}

@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import React, { useEffect, useRef, useState } from "react";
 import { GET_PROJECT } from "../graphql/queries/ProjectQueries";
 import { useParams } from "react-router";
@@ -18,6 +18,7 @@ import {
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import Modal from "react-modal";
+import { UPDATE_PROJECT } from "../graphql/mutations/ProjectMutation";
 
 Modal.setAppElement("#root");
 
@@ -44,6 +45,7 @@ export default function Project() {
   const { id } = useParams();
   const [updateFormData, setUpdateFormData] = useState(initialFormValue)
   const [openUpdateProject, setOpenUpdateProject] = useState(false);
+  const [valuesChanged, setValuesChanged] = useState(false)
   const errorRef = useRef(null);
   const { loading, error, data } = useQuery(GET_PROJECT, {
     variables: {
@@ -51,11 +53,30 @@ export default function Project() {
     },
   });
 
-  const {data: clientData} = useQuery(GET_CLIENTS)
+  const {data: clientData} = useQuery(GET_CLIENTS);
+
+  const [updateProject] = useMutation(UPDATE_PROJECT,{
+    variables:{
+      ...updateFormData
+    }, 
+    update(cache, {data:{updateProject}}){
+      const {project} = cache.readQuery({
+        query: GET_PROJECT
+      });
+      cache.writeQuery({
+        query: GET_PROJECT,
+        data : {project: {...updateProject}}
+      })
+
+      setOpenUpdateProject(false);
+      setUpdateFormData({...initialFormValue})
+    }
+  })
 
   useEffect(() => {
     if (openUpdateProject) {
         const projectData = {
+            id: data.project.id,
             name: data.project.name,
             description: data.project.description,
             clientId: data.project.client.id,
@@ -69,7 +90,23 @@ export default function Project() {
   if (loading) return;
   if (error) return <div>Something went wrong</div>;
 
-  const handleChangeInputInUpdateProject = () => {};
+  const handleChangeInputInUpdateProject = (event) => {
+
+    setValuesChanged(true);
+    
+    const name = event.target.name;
+    const value = event.target.value
+
+    setUpdateFormData({
+      ...updateFormData,
+      [name]: value
+    })
+  };
+
+  const handleUpdateProject = (event)=>{
+    event.preventDefault();
+    updateProject();
+  }
 
   const { project } = data;
   return (
@@ -88,8 +125,8 @@ export default function Project() {
           </div>
 
           <div className="w-3/4 sm:w-2/4 mx-auto mt-4 p-5 border border-main-heading rounded-lg">
-            <h1 className="text-3xl text-main-heading font-bold">
-              <FontAwesomeIcon icon={faProjectDiagram} /> {project.name}
+            <h1 className="text-5xl text-main-heading font-bold text-center">   
+              <FontAwesomeIcon className="text-3xl" icon={faProjectDiagram} /> {project.name}
             </h1>
             <div className="mt-6 border rounded-lg p-2 w-full sm:w-3/4 sm:mx-auto border-black">
               <h1 className="font-bold text-green-500">
@@ -140,11 +177,11 @@ export default function Project() {
       </div>
       <Modal
         isOpen={openUpdateProject}
-        onRequestClose={() => setOpenUpdateProject(false)}
+        onRequestClose={() => {setOpenUpdateProject(false); setValuesChanged(false); setUpdateFormData({})}}
         style={customStyles}
       >
         <form
-          //   onSubmit={handleAddProject}
+            onSubmit={handleUpdateProject}
           className="h-[93%] flex flex-col gap-4 justify-center items-center bg-main-color p-5"
         >
           <h1 className="text-main-heading font-bold text-center text-3xl mb-6">
@@ -207,7 +244,7 @@ export default function Project() {
                 <option value="">Select</option>
                 <option value="New">New</option>
                 <option value="Progress">Progress</option>
-                <option value="Completed">Done</option>
+                <option value="Done">Done</option>
               </select>
             </label>
           </div>

@@ -113,7 +113,7 @@ export default function Clients() {
       </div>
 
       <div className="mt-5">
-        <table className=" w-full mx-2 sm:w-4/5 sm:mx-auto table-auto block overflow-x-scroll">
+        <table className=" w-full mx-2 sm:w-4/5 sm:mx-auto table-auto block overflow-x-auto">
           <tbody className="table w-full">
             <tr>
               <th className="border-2 border-black">Name</th>

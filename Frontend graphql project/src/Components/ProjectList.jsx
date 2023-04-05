@@ -110,7 +110,7 @@ function ProjectList({ clientData }) {
             return (
               <div
                 key={project.id}
-                className="flex-grow flex-shrink basis-80 border border-main-heading rounded-md p-3"
+                className=" basis-88 border border-main-heading rounded-md p-3"
               >
                 <div className="flex items-center justify-between">
                   <h1 className="font-bold text-xl text-main-heading">

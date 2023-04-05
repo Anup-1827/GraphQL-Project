@@ -21,6 +21,7 @@ const GET_PROJECTS = gql`
 const GET_PROJECT = gql`
     query project($id: ID!){
             project(id: $id){
+                id
                 name
                 description
                 status
