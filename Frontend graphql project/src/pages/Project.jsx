@@ -19,6 +19,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Modal from "react-modal";
 import { UPDATE_PROJECT } from "../graphql/mutations/ProjectMutation";
+import Unauthorized from "../Components/Common/Unauthorized";
 
 Modal.setAppElement("#root");
 
@@ -106,8 +107,11 @@ export default function Project() {
   }
 
   const { project } = data;
+
+  const token = localStorage.getItem("token")
   return (
-    <>
+    token?
+    <div>
       <div className="w-full h-full bg-main-color">
         <Header />
         <div>
@@ -286,6 +290,8 @@ export default function Project() {
           </button>
         </form>
       </Modal>
-    </>
+    </div>
+    :
+    <Unauthorized/>
   );
 }
