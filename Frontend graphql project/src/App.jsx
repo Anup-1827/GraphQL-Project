@@ -9,9 +9,10 @@ import Signup from "./Components/Signup";
 import Project from "./pages/Project";
 import { DUMMY_TOKEN } from "./config";
 import NotFound from "./pages/NotFound";
+import Home from "./pages/Home";
 
 const authLink = setContext((_, {headers})=>{
-  const token = DUMMY_TOKEN
+  const token = localStorage.getItem("token")
   return{
     headers:{
       authorization: token
@@ -47,12 +48,12 @@ const client = new ApolloClient({
 function App() {
   return (
     <ApolloProvider client={client}>
-      <div className="App w-full h-full">
+      <div className="App w-[100vw] h-[100vh] ">
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login/>}/>
             <Route path="/signup" element={<Signup/>}/>
-            <Route path="/" element={<Clients/>}/>
+            <Route path="/" element={<Home/>}/>
             <Route path="/project/:id" element={<Project/>}/>
             <Route path="*" element={<NotFound/>}/>
           </Routes>

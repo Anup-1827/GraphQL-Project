@@ -223,11 +223,7 @@ const Mutation = new GraphQLObjectType({
         try {
           const user = await UserLogin.findOne({ email: args.email });
           if (!user) {
-            throw new Error(
-              JSON.stringify({
-                status: 404,
-                errors: [{ 0: "EmailId not Found" }],
-              })
+            throw new Error("EmailId Not Found"
             );
           }
 
