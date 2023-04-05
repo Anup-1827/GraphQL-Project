@@ -60,9 +60,6 @@ export default function Project() {
       ...updateFormData
     }, 
     update(cache, {data:{updateProject}}){
-      const {project} = cache.readQuery({
-        query: GET_PROJECT
-      });
       cache.writeQuery({
         query: GET_PROJECT,
         data : {project: {...updateProject}}
