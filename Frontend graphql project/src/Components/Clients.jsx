@@ -9,6 +9,7 @@ import Header from "./Header";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { ADD_CLIENT } from "../graphql/mutations/ClientMutation";
+import ProjectList from "./ProjectList";
 
 const customStyles = {
   content: {
@@ -99,6 +100,8 @@ export default function Clients() {
   return (
     <>
       <Header />
+      <div className="mx-4">
+      <ProjectList  clientData ={data}/>
       <div className="mt-2 px-2 text-right">
         <button
           type="submit"
@@ -110,8 +113,8 @@ export default function Clients() {
       </div>
 
       <div className="mt-5">
-        <table className=" w-full sm:w-4/5 m-auto table-auto overflow-x-auto">
-          <tbody>
+        <table className=" w-full mx-2 sm:w-4/5 sm:mx-auto table-auto block overflow-x-scroll">
+          <tbody className="table w-full">
             <tr>
               <th className="border-2 border-black">Name</th>
               <th className="border-2 border-black">Email</th>
@@ -125,12 +128,12 @@ export default function Clients() {
           </tbody>
         </table>
       </div>
+      </div>
 
       <Modal
         isOpen={addClientModalOpen}
         onRequestClose={()=> setAddClientModalOpen(false)}
         style={customStyles}
-        contentLabel="Example Modal"
       >
         <form onSubmit={handleAddClient} className='h-[93%] flex flex-col gap-4 justify-center items-center bg-main-color p-5'>
             <h1 className='text-main-heading font-bold text-center text-3xl mb-6'>Add New Client</h1>
@@ -165,6 +168,7 @@ export default function Clients() {
             </button>
         </form>
       </Modal>
+
     </>
   );
 }
