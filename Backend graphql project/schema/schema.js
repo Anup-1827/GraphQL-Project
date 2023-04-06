@@ -55,6 +55,14 @@ const TokenType = new GraphQLObjectType({
   }),
 });
 
+const UserType = new GraphQLObjectType({
+  name:"User",
+  fields:()=>({
+    email: {type: new GraphQLNonNull(GraphQLString)},
+    password: {type: new GraphQLNonNull(GraphQLString)}
+  })
+})
+
 const Mutation = new GraphQLObjectType({
   name: "Mutation",
   fields: () => ({
@@ -181,7 +189,7 @@ const Mutation = new GraphQLObjectType({
       },
     },
     signUpUser: {
-      type: TokenType,
+      type: UserType,
       args: {
         email: { type: new GraphQLNonNull(GraphQLString) },
         password: { type: new GraphQLNonNull(GraphQLString) },
@@ -190,12 +198,7 @@ const Mutation = new GraphQLObjectType({
         try {
           const hasEmail = await UserLogin.findOne({ email: args.email });
           if (hasEmail) {
-            throw new Error(
-              JSON.stringify({
-                status: 409,
-                errors: [{ 0: "Email Already Exist" }],
-              })
-            );
+            throw new Error("Email Already Exist");
           }
 
           const hashedPassword = await bcrypt.hash(args.password, 10);
