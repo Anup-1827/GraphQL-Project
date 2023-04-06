@@ -1,5 +1,8 @@
-/Backend\ graphql\ project/node_modules
-/Backend\ graphql\ project/package-lock.json
+/Backend\ graphql\ project\ Express-Graphql/node_modules
+/Backend\ graphql\ project\ Express-Graphql/package-lock.json
+
+/Backend\ graphql\ project\ Apollo\ Server/node_modules
+/Backend\ graphql\ project\ Apollo\ Server/package-lock.json
 
 /Frontend\ graphql\ project/node_modules
 /Frontend\ graphql\ project/package-lock.json
