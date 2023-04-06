@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ApolloClient, ApolloProvider, InMemoryCache, createHttpLink } from "@apollo/client";
 import {setContext} from "@apollo/client/link/context"
-import {BrowserRouter, Route, Routes} from "react-router-dom"
+import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom"
 
 import Clients from "./Components/Clients";
 import Login from "./pages/Login";
@@ -11,8 +11,8 @@ import { DUMMY_TOKEN } from "./config";
 import NotFound from "./pages/NotFound";
 import Home from "./pages/Home";
 
+const token = localStorage.getItem("token")
 const authLink = setContext((_, {headers})=>{
-  const token = localStorage.getItem("token")
   return{
     headers:{
       authorization: token
@@ -53,7 +53,7 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login/>}/>
             <Route path="/signup" element={<Signup/>}/>
-            <Route path="/" element={<Home/>}/>
+            <Route path="/" element={token? <Home/>: <Navigate replace to="/login"/> }/>
             <Route path="/project/:id" element={<Project/>}/>
             <Route path="*" element={<NotFound/>}/>
           </Routes>

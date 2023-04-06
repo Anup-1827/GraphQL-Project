@@ -86,7 +86,7 @@ export default function Project() {
   }, [openUpdateProject]);
 
   if (loading) return;
-  if (error) return <div>Something went wrong</div>;
+  if (error) return <div className="w-full h-full"><Unauthorized/></div>;
 
   const handleChangeInputInUpdateProject = (event) => {
 
